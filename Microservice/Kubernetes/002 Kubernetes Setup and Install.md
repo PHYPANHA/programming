@@ -163,7 +163,7 @@ kubectl [command] [type] [name] [flags]
 ប្រើដើម្បីទាញយក និងបង្ហាញព័ត៌មានអំពី Resources របស់ Kubernetes ។
 
 *   **មើល Nodes ទាំងអស់:**
-    ```bash
+    ``` bash
     kubectl get nodes
     ```
     *   **ការពន្យល់:** បង្ហាញបញ្ជី Nodes នៅក្នុង Cluster រួមជាមួយ Status, Roles, Ages, និង Version។
