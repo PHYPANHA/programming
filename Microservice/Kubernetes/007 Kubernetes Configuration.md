@@ -1103,3 +1103,524 @@ spec:
 # ចុច Ctrl+C ដើម្បីបញ្ឈប់ command នេះបន្ទាប់ពីវាចាប់ផ្តើមដំណើរការ
 !kubectl drain minikube --ignore-daemonsets --delete-emptydir-data --force
 ```
+
+អ្នកនឹងឃើញថា `kubectl drain` នឹងព្យាយាមលុប Pods របស់អ្នក។ វានឹងលុប Pod មួយចេញដោយជោគជ័យ (ដោយសារ `allowed disruptions` គឺ 1) ប៉ុន្តែបន្ទាប់មកវានឹងជាប់គាំង ហើយនឹងបង្ហាញសារដូចជា `Evicting pod default/nginx-app-deployment-pdb-xxxxx` និង `The pod has a PodDisruptionBudget assigned. The drain action will be blocked until the PodDisruptionBudget is respected.`។ នេះបង្ហាញថា PDB កំពុងដំណើរការដើម្បីការពារ Pods របស់អ្នកមិនឱ្យត្រូវបានលុបលើសពីដែនកំណត់។
+
+``` yaml
+# ប្រសិនបើ kubectl drain ជាប់គាំង សូមរង់ចាំមួយរយៈហើយចុច Ctrl+C
+# បន្ទាប់មក uncordon node ដើម្បីឱ្យ Scheduler អាចដាក់ Pods ទៅកាន់ Node នោះវិញ
+!kubectl uncordon minikube
+```
+
+``` yaml
+# ពិនិត្យមើល Pods ម្តងទៀត បន្ទាប់ពី uncordon
+!kubectl get pods -l app=nginx-pdb
+```
+
+អ្នកនឹងឃើញថា Pods នៅតែមានចំនួន 3 ។ Kubernetes បានធានាថាចំនួន Pods ដែលបានកំណត់ដោយ PDB នៅតែមាន Available ។
+
+### សរុបមក
+
+**PodDisruptionBudget (PDB)** គឺជាឧបករណ៍ដ៏សំខាន់មួយសម្រាប់ធានានូវ High Availability របស់កម្មវិធីរបស់អ្នកនៅក្នុង Kubernetes Cluster ។ វាផ្តល់ឱ្យអ្នកនូវការគ្រប់គ្រងលើចំនួន Pods ដែលអាច Unavailable បានក្នុងអំឡុងពេល Voluntary Disruptions ដែលអនុញ្ញាតឱ្យអ្នកធ្វើការថែទាំ Cluster ដោយសុវត្ថិភាពដោយមិនប៉ះពាល់ដល់ Service Availability ។
+
+``` yaml
+# Clean up
+!kubectl delete -f nginx-pdb-deployment.yaml
+!kubectl delete -f min-available-pdb.yaml
+!rm nginx-pdb-deployment.yaml min-available-pdb.yaml
+```
+
+## ៧.៦ Network Policies (គោលការណ៍បណ្ដាញ)
+
+នៅក្នុង Kubernetes Cluster ការទំនាក់ទំនងរវាង Pods គឺបើកចំហរតាមលំនាំដើម។ មានន័យថា Pod ណាមួយអាចទំនាក់ទំនងជាមួយ Pod ផ្សេងទៀតបាន។ ខណៈពេលដែលនេះផ្តល់នូវភាពបត់បែន វាអាចបង្កជាហានិភ័យសុវត្ថិភាព ប្រសិនបើអ្នកត្រូវការបំបែក Workloads ផ្សេងៗគ្នា ឬកំណត់ការចូលប្រើប្រាស់ទៅកាន់ Services ជាក់លាក់។
+
+ដើម្បីដោះស្រាយបញ្ហានេះ Kubernetes ផ្តល់នូវ **Network Policies** ។
+
+### អ្វីទៅជា Network Policy?
+
+**Network Policy** គឺជា API Object របស់ Kubernetes ដែលអនុញ្ញាតឱ្យអ្នកកំណត់ពីរបៀបដែល Pods មួយក្រុមអាចទំនាក់ទំនងជាមួយ Pods ផ្សេងទៀត ក៏ដូចជា Endpoints ខាងក្រៅ (External Endpoints)។ Network Policies គឺមាន Namespace-scoped មានន័យថាពួកវាត្រូវបានអនុវត្តនៅក្នុង Namespace ជាក់លាក់មួយ។
+
+Network Policies ត្រូវបានអនុវត្តដោយ **Container Network Interface (CNI) Plugin** ដែលកំពុងដំណើរការនៅក្នុង Cluster របស់អ្នក (ឧទាហរណ៍ Calico, Cilium, Flannel)។ ប្រសិនបើ Cluster របស់អ្នកមិនមាន CNI Plugin ដែលគាំទ្រ Network Policies នោះ Policy ទាំងនោះនឹងមិនមានប្រសិទ្ធភាពទេ។
+
+### ហេតុអ្វីត្រូវប្រើ Network Policies?
+
+*   **ការបែងចែកបណ្ដាញ (Network Segmentation):** បំបែក Workloads ផ្សេងៗគ្នាទៅជាផ្នែកដាច់ដោយឡែកពីគ្នាដើម្បីការពារការទំនាក់ទំនងដែលមិនចាំបាច់។
+*   **បង្កើនសុវត្ថិភាព:** កំណត់លំហូរចរាចរណ៍ (Traffic Flow) ដើម្បីកាត់បន្ថយផ្ទៃនៃការវាយប្រហារ (Attack Surface) និងការពារការចូលប្រើប្រាស់ដោយគ្មានការអនុញ្ញាត។
+*   **អនុវត្តគោលការណ៍ Compliance:** ជួយក្នុងការអនុវត្តគោលការណ៍សុវត្ថិភាព និងបទប្បញ្ញត្តិ (Regulatory Compliance) ។
+*   **គោលការណ៍ Least Privilege:** ធានាថា Pod នីមួយៗអាចទំនាក់ទំនងជាមួយតែ Pods ឬ Services ដែលវាត្រូវការប៉ុណ្ណោះ។
+
+### របៀបកំណត់ Network Policies (Policy Types)
+
+Network Policies កំណត់ Rules សម្រាប់ `ingress` (Traffic ចូល) និង `egress` (Traffic ចេញ) ។
+
+**Fields សំខាន់ៗ:**
+
+*   `podSelector`: កំណត់ Pods ណាដែល Network Policy នេះនឹងត្រូវបានអនុវត្តចំពោះ។ ប្រសិនបើមិនបានបញ្ជាក់ទេ Policy នឹងអនុវត្តចំពោះ Pods ទាំងអស់នៅក្នុង Namespace ។
+*   `policyTypes`: បញ្ជាក់ថាតើ Policy នេះអនុវត្តចំពោះ `Ingress`, `Egress`, ឬទាំងពីរ។
+*   `ingress`: កំណត់ Rules សម្រាប់ Traffic ចូលទៅកាន់ Pods ដែលបានជ្រើសរើសដោយ `podSelector` ។
+*   `egress`: កំណត់ Rules សម្រាប់ Traffic ចេញពី Pods ដែលបានជ្រើសរើសដោយ `podSelector` ។
+
+### ឧទាហរណ៍ Network Policy
+
+យើងនឹងបង្កើត Deployment ពីរ៖ `backend-app` និង `frontend-app`។
+
+*   `backend-app` នឹងដំណើរការ Nginx ជា Web Server ។
+*   `frontend-app` នឹងមាន busybox ដែលអាច ping ឬ wget ទៅកាន់ backend បាន។
+
+ដំបូង យើងនឹងបង្ហាញថា `frontend` អាច Access `backend` បានតាមលំនាំដើម។ បន្ទាប់មក យើងនឹងអនុវត្ត Network Policy ដើម្បី **បិទរាល់ Traffic ចូលទាំងអស់** ទៅកាន់ `backend` ហើយបន្ទាប់មក **អនុញ្ញាតតែ Traffic ពី `frontend`** ទៅកាន់ `backend` ។
+
+#### ១. Deploy Backend Application និង Service
+
+``` yaml
+%%writefile backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+%%writefile backend-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+```
+
+``` yaml
+# Deploy Backend Deployment និង Service
+!kubectl apply -f backend-deployment.yaml
+!kubectl apply -f backend-service.yaml
+
+# រង់ចាំ Pod ដំណើរការ
+!kubectl wait --for=condition=Ready pod -l app=backend --timeout=120s
+
+# ពិនិត្យមើល Pods និង Service
+!kubectl get pods -l app=backend
+!kubectl get service backend-service
+```
+
+#### ២. Deploy Frontend Application (Client)
+
+``` yaml
+%%writefile frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-app
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: busybox-container
+        image: busybox:latest
+        command: ["sh", "-c", "while true; do sleep 3600; done"]
+        # commands ផ្សេងៗអាចនឹងប្រើដើម្បី test connection
+  # restartPolicy: Never
+```
+
+``` yaml
+# Deploy Frontend Deployment
+!kubectl apply -f frontend-deployment.yaml
+
+# រង់ចាំ Pod ដំណើរការ
+!kubectl wait --for=condition=Ready pod -l app=frontend --timeout=120s
+
+# ពិនិត្យមើល Pod
+!kubectl get pods -l app=frontend
+```
+
+#### ៣. ពិនិត្យមើលការទំនាក់ទំនង (មុនពេលអនុវត្ត Network Policy)
+
+យើងនឹងប្រើ `kubectl exec` ដើម្បីចូលទៅក្នុង Pod របស់ `frontend-app` ហើយព្យាយាម `wget` ទៅកាន់ `backend-service` ។
+
+``` yaml
+# យកឈ្មោះ Pod របស់ frontend
+FRONTEND_POD=$(kubectl get pods -l app=frontend -o jsonpath='{.items[0].metadata.name}')
+
+# ព្យាយាម wget ពី frontend ទៅ backend
+!kubectl exec $FRONTEND_POD -- wget -O- backend-service:80
+```
+អ្នកគួរតែឃើញ HTML Content របស់ Nginx Default Page ដែលបញ្ជាក់ថាការទំនាក់ទំនងគឺដំណើរការធម្មតា។
+
+#### ៤. អនុវត្ត Network Policy (បិទ Traffic ចូលទាំងអស់ទៅកាន់ Backend)
+
+``` yaml
+%%writefile deny-all-ingress-to-backend.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-ingress-to-backend
+spec:
+  podSelector:
+    matchLabels:
+      app: backend # Policy នេះអនុវត្តចំពោះ Pods ដែលមាន Label app: backend
+  policyTypes:
+    - Ingress # កំណត់ Rules សម្រាប់ Ingress (Traffic ចូល)
+  # ដោយសារតែយើងមិនបានបញ្ជាក់ 'ingress' rules ណាមួយ
+  # នេះមានន័យថា Traffic ចូលទាំងអស់ទៅកាន់ Pods ដែលបានជ្រើសរើសនឹងត្រូវបានបដិសេធ
+```
+
+``` yaml
+# Deploy Network Policy
+!kubectl apply -f deny-all-ingress-to-backend.yaml
+
+# ពិនិត្យមើល Network Policy
+!kubectl get networkpolicy
+!kubectl describe networkpolicy deny-all-ingress-to-backend
+```
+
+#### ៥. ពិនិត្យមើលការទំនាក់ទំនង (បន្ទាប់ពីបិទ Traffic ចូលទាំងអស់)
+
+ឥឡូវនេះយើងនឹងព្យាយាម `wget` ម្តងទៀតពី `frontend-app` ទៅ `backend-service` ។
+
+``` yaml
+# ព្យាយាម wget ពី frontend ទៅ backend ម្តងទៀត
+# វានឹងជាប់គាំង ហើយបន្ទាប់មក timeout
+!kubectl exec $FRONTEND_POD -- wget -O- backend-service:80 --timeout=5 || true
+```
+
+អ្នកគួរតែឃើញថា Command គឺ `timeout` ឬ `failed` ដែលបញ្ជាក់ថា Traffic ត្រូវបានបដិសេធដោយ Network Policy ។
+
+#### ៦. អនុវត្ត Network Policy (អនុញ្ញាត Traffic ពី Frontend ទៅ Backend)
+
+``` yaml
+%%writefile allow-frontend-to-backend.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+spec:
+  podSelector:
+    matchLabels:
+      app: backend # Policy នេះអនុវត្តចំពោះ Pods ដែលមាន Label app: backend
+  policyTypes:
+    - Ingress # កំណត់ Rules សម្រាប់ Ingress (Traffic ចូល)
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend # អនុញ្ញាត Traffic ចូលពី Pods ដែលមាន Label app: frontend
+      ports:
+        - protocol: TCP
+          port: 80 # អនុញ្ញាតនៅលើ Port 80
+```
+```yaml
+# Deploy Network Policy
+!kubectl apply -f allow-frontend-to-backend.yaml
+
+# ពិនិត្យមើល Network Policy
+!kubectl get networkpolicy
+!kubectl describe networkpolicy allow-frontend-to-backend
+```
+
+#### ៧. ពិនិត្យមើលការទំនាក់ទំនង (បន្ទាប់ពីអនុញ្ញាត Traffic ពី Frontend)
+
+ឥឡូវនេះយើងនឹងព្យាយាម `wget` ម្តងទៀតពី `frontend-app` ទៅ `backend-service` ។
+
+``` yaml
+# ព្យាយាម wget ពី frontend ទៅ backend ម្តងទៀត
+!kubectl exec $FRONTEND_POD -- wget -O- backend-service:80
+```
+
+អ្នកគួរតែឃើញ HTML Content របស់ Nginx Default Page ម្តងទៀត ដែលបញ្ជាក់ថា Network Policy ឥឡូវនេះអនុញ្ញាតឱ្យ Traffic ពី `frontend-app` ទៅ `backend-app` ។
+
+### សរុបមក
+
+**Network Policies** គឺជាឧបករណ៍ដ៏សំខាន់សម្រាប់គ្រប់គ្រងសុវត្ថិភាពបណ្ដាញនៅក្នុង Kubernetes Cluster ។ ពួកវាអនុញ្ញាតឱ្យអ្នកកំណត់ដោយច្បាស់លាស់ថាតើ Pod ណាអាចទំនាក់ទំនងជាមួយ Pod ណា ឬ Endpoints ខាងក្រៅបាន ដែលជួយបំបែក Workloads និងអនុវត្តគោលការណ៍សុវត្ថិភាពយ៉ាងមានប្រសិទ្ធភាព។ ការប្រើប្រាស់ Network Policies គឺជាផ្នែកសំខាន់មួយនៃការកសាង Microservices Architecture ដែលមានសុវត្ថិភាព។
+
+``` yaml
+# Clean up
+!kubectl delete -f backend-deployment.yaml
+!kubectl delete -f backend-service.yaml
+!kubectl delete -f frontend-deployment.yaml
+!kubectl delete -f deny-all-ingress-to-backend.yaml
+!kubectl delete -f allow-frontend-to-backend.yaml
+
+!rm backend-deployment.yaml backend-service.yaml frontend-deployment.yaml deny-all-ingress-to-backend.yaml allow-frontend-to-backend.yaml
+```
+
+## ៧.៧ Service Mesh (Istio)
+
+នៅក្នុង Microservices Architecture កម្មវិធីត្រូវបានបំបែកទៅជា Services តូចៗ និងឯករាជ្យជាច្រើន ដែលនីមួយៗទំនាក់ទំនងគ្នាទៅវិញទៅមកតាមរយៈ Network ។ នៅពេលចំនួន Services កើនឡើង ការគ្រប់គ្រងការទំនាក់ទំនងទាំងនេះអាចក្លាយជាបញ្ហាស្មុគស្មាញ រួមមាន៖
+
+*   **Load Balancing:** តើធ្វើដូចម្តេចដើម្បីចែកចាយ Traffic រវាង Instances របស់ Service មួយ?
+*   **Traffic Management:** តើធ្វើដូចម្តេចដើម្បី Route Traffic តាមលក្ខខណ្ឌជាក់លាក់ (ឧទាហរណ៍ Canary deployments, A/B testing)?
+*   **Security:** តើធ្វើដូចម្តេចដើម្បីធានាទំនាក់ទំនងរវាង Services (Authentication, Authorization, Encryption)?
+*   **Observability:** តើធ្វើដូចម្តេចដើម្បីតាមដាន និងវិភាគ Traffic រវាង Services (Metrics, Tracing, Logging)?
+*   **Fault Tolerance:** តើធ្វើដូចម្តេចដើម្បីដោះស្រាយបញ្ហាបណ្តាញ (Retries, Timeouts, Circuit Breaking)?
+
+**Service Mesh** គឺជា Infrastructure Layer ដែលគ្រប់គ្រងការទំនាក់ទំនងរវាង Services ។ វាជាធម្មតាត្រូវបានអនុវត្តដោយប្រើ **Sidecar Proxy** ដែលដំណើរការរួមជាមួយ Services នីមួយៗ។ Proxy ទាំងនេះស្ទាក់ចាប់ (intercept) និងគ្រប់គ្រងរាល់ Traffic ចូល និងចេញពី Service ដោយមិនចាំបាច់កែប្រែ Code របស់ Service នោះទេ។
+
+### អ្វីទៅជា Istio?
+
+**Istio** គឺជា Open-source Service Mesh Platform ដ៏ពេញនិយមបំផុតមួយ ដែលត្រូវបានបង្កើតឡើងដោយ Google, IBM, និង Lyft ។ Istio ផ្តល់នូវមុខងារដ៏ទូលំទូលាយសម្រាប់គ្រប់គ្រង Service-to-Service Communication រួមមាន Traffic Management, Security, និង Observability ។
+
+Istio ត្រូវបានបង្កើតឡើងពី Components សំខាន់ៗពីរ៖
+
+1.  **Control Plane:** គ្រប់គ្រង និងកំណត់រចនាសម្ព័ន្ធ Proxies នៅក្នុង Data Plane ។ Components សំខាន់ៗរួមមាន៖
+    *   **`Istiod`:** ជា Daemon ដែលផ្តល់នូវ Service Discovery, Configuration, និង Certificate Management ។ វាមាន Components ដូចជា Pilot (សម្រាប់ Traffic Management), Citadel (សម្រាប់ Security), និង Galley (សម្រាប់ Configuration Management) ។
+2.  **Data Plane:** ផ្សំឡើងពី **Envoy Proxies** ដែលដំណើរការជា Sidecar Containers រួមជាមួយ Services របស់កម្មវិធីនីមួយៗ។ Envoy Proxies ស្ទាក់ចាប់រាល់ Traffic ចូល និងចេញពី Pod ហើយអនុវត្ត Rules ដែលបានកំណត់ដោយ Control Plane ។
+
+<img src="https://istio.io/latest/docs/ops/deployment/architecture/arch.svg" alt="Istio Architecture" width="600"/>
+
+### ហេតុអ្វីត្រូវប្រើ Istio?
+
+*   **Traffic Management កម្រិតខ្ពស់:** អនុញ្ញាតឱ្យអ្នកកំណត់ Fine-grained Traffic Rules ដូចជា Request Routing, Canary Deployments, A/B Testing, Fault Injection, Retries, Timeouts, និង Circuit Breaking ។
+*   **Security:** ផ្តល់នូវ TLS Encryption រវាង Services (mTLS), Authentication, Authorization, និង Role-Based Access Control (RBAC) ។
+*   **Observability:** ប្រមូល Metrics (Latency, Traffic, Errors), Distributed Traces, និង Access Logs ពី Traffic រវាង Services ដែលជួយក្នុងការ Debugging និង Monitoring ។
+*   **Abstraction:** បំបែក Logic សម្រាប់ Network ពី Business Logic របស់កម្មវិធី ដែលអនុញ្ញាតឱ្យ Developers ផ្តោតលើការសរសេរ Code កម្មវិធី។
+
+### ការដំឡើង Istio (នៅលើ Minikube)
+
+ការដំឡើង Istio នៅលើ Production Cluster អាចមានភាពស្មុគស្មាញ ប៉ុន្តែសម្រាប់ Minikube យើងអាចប្រើ Commands សាមញ្ញដើម្បីដំឡើងវា។
+
+**១. ទាញយក `istioctl` CLI Tool:**
+
+`istioctl` គឺជា Command-line Tool សម្រាប់គ្រប់គ្រង Istio service mesh ។
+
+``` yaml
+# ទាញយក istioctl (Version ថ្មីបំផុត) - សម្រាប់ Linux
+!curl -L https://istio.io/downloadIstio | sh -
+
+# រកមើល Directory របស់ Istio
+%env ISTIO_HOME=/content/istio-1.22.0
+# ផ្លាស់ប្តូរ Path ទៅ istioctl binary
+%env PATH=$PATH:$ISTIO_HOME/bin
+
+# ផ្ទៀងផ្ទាត់ការដំឡើង
+!istioctl version
+```
+
+**២. ដំឡើង Istio នៅលើ Minikube:**
+
+យើងនឹងប្រើ `demo` Configuration Profile ដែលរួមបញ្ចូល Components ទាំងអស់របស់ Istio ហើយត្រូវបានកំណត់រចនាសម្ព័ន្ធសម្រាប់ Workloads តូចៗ។
+
+``` yaml
+!istioctl install --set profile=demo -y
+```
+
+**៣. ផ្ទៀងផ្ទាត់ការដំឡើង Istio:**
+
+ពិនិត្យមើល Pods ទាំងអស់នៅក្នុង Namespace `istio-system` ។
+
+``` yaml
+!kubectl get pods -n istio-system
+```
+
+អ្នកគួរតែឃើញ Pods ដូចជា `istiod` និង `istio-ingressgateway` កំពុងដំណើរការ។
+
+### ការ Inject Envoy Sidecar
+
+ដើម្បីឱ្យ Istio គ្រប់គ្រង Traffic សម្រាប់ Services របស់អ្នក អ្នកត្រូវតែ **Inject Envoy Sidecar Proxy** ទៅក្នុង Pods របស់ Services ទាំងនោះ។
+
+**១. Enable Istio Sidecar Injection សម្រាប់ Namespace:**
+
+វិធីងាយស្រួលបំផុតគឺ Enable Auto-injection សម្រាប់ Namespace ទាំងមូល។ នៅពេលអ្នក Label Namespace មួយជាមួយ `istio-injection=enabled` រាល់ Pod ថ្មីដែលត្រូវបានបង្កើតនៅក្នុង Namespace នោះនឹងទទួលបាន Envoy Sidecar ដោយស្វ័យប្រវត្តិ។
+
+``` yaml
+!kubectl label namespace default istio-injection=enabled
+```
+
+**២. Deploy Sample Application:**
+
+យើងនឹង Deploy Nginx Deployment មួយទៅកាន់ `default` Namespace ។
+
+``` yaml
+%%writefile nginx-app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+```
+
+``` yaml
+!kubectl apply -f nginx-app.yaml
+```
+
+**៣. ពិនិត្យមើល Pods:**
+
+អ្នកនឹងឃើញថា Pod របស់ `nginx-deployment` ឥឡូវនេះមាន 2 Containers (មួយសម្រាប់ Nginx និងមួយសម្រាប់ Envoy Sidecar) ។
+
+``` yaml
+!kubectl get pods -l app=nginx
+```
+
+### Traffic Management ជាមួយ Istio
+
+Istio ប្រើ Resource ប្រភេទពិសេសដើម្បីគ្រប់គ្រង Traffic:
+
+*   **`Gateway`:** កំណត់ Entry Point សម្រាប់ការទំនាក់ទំនងចូល និងចេញពី Service Mesh (ឧទាហរណ៍ សម្រាប់ External Traffic) ។
+*   **`VirtualService`:** កំណត់ Rules សម្រាប់ការ Routing Traffic ទៅកាន់ Services ផ្សេងៗគ្នា។
+*   **`DestinationRule`:** កំណត់ Policies សម្រាប់ Traffic បន្ទាប់ពីវាត្រូវបាន Route ទៅកាន់ Service មួយ (ឧទាហរណ៍ Load Balancing Algorithms, Connection Pool Settings) ។
+
+#### ១. Deploy Service សម្រាប់ Nginx Application
+
+យើងនឹងបង្កើត Service ធម្មតាសម្រាប់ Nginx Deployment ។
+
+``` yaml
+%%writefile nginx-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: nginx
+```
+
+``` yaml
+!kubectl apply -f nginx-service.yaml
+```
+
+#### ២. បង្កើត Istio Gateway
+
+`Gateway` Resource គ្រប់គ្រង Traffic ដែលចូលមក Service Mesh ពីខាងក្រៅ Cluster ។
+
+``` yaml
+%%writefile nginx-gateway.yaml
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: nginx-gateway
+spec:
+  selector:
+    istio: ingressgateway # ប្រើ Istio Ingress Gateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*" # អនុញ្ញាត Host ទាំងអស់
+```
+
+``` yaml
+!kubectl apply -f nginx-gateway.yaml
+```
+
+#### ៣. បង្កើត Istio VirtualService
+
+`VirtualService` កំណត់ពីរបៀបដែល Request ត្រូវបាន Route ទៅកាន់ Services នៅក្នុង Service Mesh ។
+
+``` yaml
+%%writefile nginx-virtualservice.yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nginx-virtualservice
+spec:
+  hosts:
+  - "*" # សម្រាប់ Host ទាំងអស់
+  gateways:
+  - nginx-gateway # ភ្ជាប់ជាមួយ Gateway ដែលបានបង្កើត
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: nginx-service # Route ទៅកាន់ Nginx Service
+        port:
+          number: 80
+```
+
+``` yaml
+!kubectl apply -f nginx-virtualservice.yaml
+```
+#### ៤. ទទួលបាន External IP របស់ Ingress Gateway
+
+យើងនឹងប្រើ IP នេះដើម្បី Access Nginx Application ពីខាងក្រៅ Cluster ។
+
+``` yaml
+# នៅលើ Minikube, Ingress Gateway IP នឹងជា IP របស់ Minikube Node
+INGRESS_HOST=$(minikube ip)
+INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+GATEWAY_URL="$INGRESS_HOST:$INGRESS_PORT"
+
+print(f"Ingress Gateway URL: {GATEWAY_URL}")
+```
+#### ៥. Access Nginx Application តាមរយៈ Istio Ingress Gateway
+
+``` yaml
+# ព្យាយាម Access Nginx តាមរយៈ Gateway
+!curl -s $GATEWAY_URL
+```
+
+អ្នកគួរតែឃើញ HTML Content របស់ Nginx Default Page ដែលបញ្ជាក់ថា Traffic ត្រូវបាន Route យ៉ាងត្រឹមត្រូវតាមរយៈ Istio Gateway និង VirtualService ។
+
+### សរុបមក
+
+**Istio Service Mesh** ផ្តល់នូវដំណោះស្រាយដ៏ទូលំទូលាយសម្រាប់គ្រប់គ្រង Microservices Architecture ។ វាជួយដោះស្រាយបញ្ហាស្មុគស្មាញនៃការទំនាក់ទំនងរវាង Services ដូចជា Traffic Management, Security, និង Observability ដោយមិនចាំបាច់កែប្រែ Code របស់កម្មវិធី។ ការប្រើប្រាស់ Service Mesh ដូចជា Istio អាចបង្កើនភាពរឹងមាំ (resilience), សុវត្ថិភាព (security), និងភាពអាចគ្រប់គ្រងបាន (manageability) របស់ Distributed Applications របស់អ្នក។
+
+``` yaml
+# Clean up Istio Resources
+!kubectl delete -f nginx-virtualservice.yaml
+!kubectl delete -f nginx-gateway.yaml
+!kubectl delete -f nginx-service.yaml
+!kubectl delete -f nginx-app.yaml
+
+# Uninstall Istio
+!istioctl uninstall --purge -y
+
+# Remove istio-injection label from namespace
+!kubectl label namespace default istio-injection-
+
+# Clean up local files
+!rm nginx-app.yaml nginx-service.yaml nginx-gateway.yaml nginx-virtualservice.yaml
+```
+
