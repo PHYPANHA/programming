@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 # ជំពូកទី ៣៖ គំនិតសំខាន់ៗជាមូលដ្ឋាន (Core Concepts)
 
 ## ៣.១ Pods (ការពន្យល់ និងរបៀបសរសេរ YAML សម្រាប់ Pod)

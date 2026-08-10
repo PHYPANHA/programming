@@ -1,3 +1,16 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
+
 # ជំពូកទី ២៖ ការរៀបចំប្រព័ន្ធ (Setup & Installation)
 
 ## ២.១ ការដំឡើង Minikube ដើម្បីរៀននៅលើកុំព្យូទ័រផ្ទាល់ខ្លួន

@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 # ជំពូកទី ៥៖ ការគ្រប់គ្រងទិន្នន័យ (Storage Management)
 
 នៅក្នុងជំពូកមុនៗ យើងបានរៀនពីរបៀប Deploy និងគ្រប់គ្រងកម្មវិធីនៅក្នុង Kubernetes Cluster។ ទោះជាយ៉ាងណាក៏ដោយ Pods គឺជា Ephemeral (បណ្ដោះអាសន្ន) ដែលមានន័យថា នៅពេល Pod មួយត្រូវបានលុប ឬចាប់ផ្តើមឡើងវិញ ទិន្នន័យទាំងអស់ដែលត្រូវបានរក្សាទុកនៅក្នុង Container's Filesystem នឹងបាត់បង់។ នេះជាបញ្ហាសម្រាប់កម្មវិធីភាគច្រើនដែលត្រូវការរក្សាទុកទិន្នន័យ (Stateful Applications)។
