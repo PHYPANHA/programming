@@ -1,0 +1,3 @@
+kubectl delete -f "https://strimzi.io/install/latest?namespace=kafka" -n kafka
+kubectl delete namespace kafka
+kubectl get namespace kafka

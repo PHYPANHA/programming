@@ -1,0 +1,12 @@
+curl -sL https://run.linkerd.io/install | sh     
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
+linkerd install --crds | kubectl apply -f -
+linkerd install --set proxyInit.runAsRoot=true | kubectl apply -f -
+linkerd check
+kubectl get pods -n linkerd
+kubectl get configmap -n linkerd
+
+
+# delete linkerd
+linkerd uninstall | kubectl delete -f -
+kubectl delete ns linkerd

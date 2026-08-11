@@ -1,0 +1,12 @@
+Invoke-WebRequest -Uri https://github.com/istio/istio/releases/download/1.27.3/istio-1.27.3-win.zip -OutFile istio.zip
+Expand-Archive istio.zip -DestinationPath .
+cd istio-1.27.3
+istioctl install --set profile=demo -y
+kubectl get pods -n istio-system
+kubectl label namespace default istio-injection=enabled
+kubectl apply -f samples/addons
+kubectl get pods -n istio-system
+istioctl dashboard kiali
+istioctl dashboard grafana
+istioctl dashboard prometheus
+kubectl rollout restart deployment
