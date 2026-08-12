@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី៧៖ ការអនុវត្តន៍ JWT Authentication (JWT Authentication) ជំនួស HTTP Basic
 
 JWT (JSON Web Tokens) គឺជាស្តង់ដារមួយដែលប្រើសម្រាប់បង្កើត Access Tokens (Access Tokens) ដែលអនុញ្ញាតឲ្យអ្នកប្រើប្រាស់ផ្ទៀងផ្ទាត់ (Authenticate) ខ្លួនឯងជាមួយ Server (Server) ។ វាមិនរក្សាទុកស្ថានភាព (Stateless) ដែលធ្វើឲ្យវាស័ក្តិសមសម្រាប់ REST APIs (REST APIs) និង Microservices (Microservices) ។

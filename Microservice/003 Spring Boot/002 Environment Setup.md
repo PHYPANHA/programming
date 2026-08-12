@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី២៖ ការរៀបចំឧបករណ៍ (Environment Setup) និងការបង្កើតគម្រោងដំបូង (First Project) តាមរយៈ Spring Initializr
 
 ការរៀបចំបរិយាកាសការងារឱ្យបានត្រឹមត្រូវ គឺជាជំហានគ្រឹះដ៏សំខាន់បំផុត។ ផ្នែកនេះនឹងពន្យល់លម្អិតអំពីឧបករណ៍នីមួយៗ និងរបៀបប្រើប្រាស់ឧបករណ៍ជំនួយដើម្បីចាប់ផ្តើមគម្រោងបានយ៉ាងរហ័ស។

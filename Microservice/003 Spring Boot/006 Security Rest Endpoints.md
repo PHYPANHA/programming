@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី៦៖ ការបន្ថែមសុវត្ថិភាព (Security) ទៅកាន់ REST Endpoints ជាមួយ Spring Security
 
 ការការពារ REST Endpoints (REST Endpoints) របស់អ្នកគឺមានសារៈសំខាន់ណាស់ ដើម្បីធានាថាមានតែអ្នកប្រើប្រាស់ដែលមានការអនុញ្ញាត (Authorized Users) ប៉ុណ្ណោះដែលអាចចូលប្រើទិន្នន័យ និងមុខងាររបស់កម្មវិធីអ្នក។ Spring Security (Spring Security) គឺជាក្របខ័ណ្ឌការងារ (Framework) ដ៏មានឥទ្ធិពល និងអាចបត់បែនបាន (Highly Customizable) សម្រាប់ផ្តល់សុវត្ថិភាពដល់កម្មវិធី Spring (Spring Applications)។

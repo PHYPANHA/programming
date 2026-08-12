@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី៥៖ ការភ្ជាប់ទៅកាន់មូលដ្ឋានទិន្នន័យ (Database Connection) ជាមួយ Spring Data JPA
 
 នៅក្នុងផ្នែកនេះ យើងនឹងរៀនពីរបៀបភ្ជាប់កម្មវិធី Spring Boot របស់យើងទៅកាន់មូលដ្ឋានទិន្នន័យ (Database) ដោយប្រើប្រាស់ Spring Data JPA (Spring Data JPA) ។ Spring Data JPA ធ្វើឲ្យការធ្វើអន្តរកម្មជាមួយមូលដ្ឋានទិន្នន័យ (Database Interaction) មានភាពងាយស្រួលដោយផ្តល់នូវAbstraction (Abstraction) មួយពី JDBC (JDBC) និងORM (ORM) ដូចជា Hibernate (Hibernate) ។

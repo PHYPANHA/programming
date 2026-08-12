@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី៤៖ ការបង្កើត REST API ដំបូង (Hello World) និងការប្រើប្រាស់ Annotations
 
 នៅក្នុងផ្នែកនេះ យើងនឹងរៀនពីរបៀបបង្កើត RESTful API (RESTful API) សាមញ្ញមួយនៅក្នុង Spring Boot ដើម្បីឆ្លើយតប (Respond) ទៅនឹងសំណើ (Requests) របស់ HTTP (HTTP) ។ យើងនឹងបង្កើត Endpoint (Endpoint) 'Hello World' ដំបូងរបស់យើង ហើយស្វែងយល់ពីរបៀបប្រើប្រាស់ Annotations (Annotations) សំខាន់ៗ។

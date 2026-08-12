@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី៣៖ ការស្វែងយល់ពីរចនាសម្ព័ន្ធថត (Folder Structure) និងឯកសារ (pom.xml / application.properties)
 
 នៅពេលដែលអ្នកបានបង្កើតគម្រោង Spring Boot ដោយប្រើ Spring Initializr ហើយបាននាំចូល (Import) វាទៅក្នុង IDE (IDE) របស់អ្នក អ្នកនឹងឃើញរចនាសម្ព័ន្ធថត (Folder Structure) ស្តង់ដារមួយ។ ការយល់ដឹងពីរចនាសម្ព័ន្ធនេះគឺសំខាន់ណាស់សម្រាប់ការរៀបចំកូដ (Organizing Code) និងការកំណត់រចនាសម្ព័ន្ធ (Configuration) គម្រោងរបស់អ្នក។

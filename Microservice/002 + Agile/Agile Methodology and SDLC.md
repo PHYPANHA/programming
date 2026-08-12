@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## មេរៀនលម្អិត និងមគ្គុទ្ទេសក៍អនុវត្តជាក់ស្តែង៖ Agile Methodology & SDLC
 
 ក្នុងនាមជាអ្នកជំនាញ Agile Coach និងជាគ្រូបង្រៀនផ្នែកអភិវឌ្ឍន៍សូហ្វវែរ (Software Engineering Instructor) ខ្ញុំសូមបង្ហាញមេរៀនដ៏ទូលំទូលាយនេះ ដើម្បីជួយអ្នកសិក្សាស្វែងយល់ពីវិធីសាស្ត្រ Agile និងវដ្តជីវិតអភិវឌ្ឍសូហ្វវែរ (Software Development Life Cycle - SDLC) ប្រកបដោយប្រសិទ្ធភាព។

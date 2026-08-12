@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 ## ផ្នែកទី ៨៖ ការយល់ដឹងលម្អិតអំពី Maven (Detailed Understanding of Maven)
 
 **Maven** គឺជាឧបករណ៍គ្រប់គ្រងគម្រោង (Project Management Tool) និងបង្កើតស្វ័យប្រវត្តិ (Build Automation Tool) ដែលប្រើសម្រាប់គម្រោង Java (Java Projects) ។ គោលបំណងចម្បងរបស់វាគឺដើម្បីស្តង់ដារ (Standardize) របៀបដែលគម្រោងត្រូវបានបង្កើត គ្រប់គ្រង Dependencies (Dependencies) និងដំណើរការ (Run) Test (Tests) ។
