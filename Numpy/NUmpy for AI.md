@@ -1,3 +1,15 @@
+<style>
+  body, p, ul, ol, li {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Khmer OS Battambang', sans-serif;
+    font-weight: bold;
+  }
+</style>
+
 # សៀវភៅសិក្សា៖ NumPy for AI Training
 
 ## មាតិកាសរុប (Table of Contents)
@@ -515,3 +527,390 @@ Total samples: 5
 Training samples: 4
 Testing samples: 1
 ```
+
+## ជំពូកទី ៧៖ Vectorization - ការបង្កើនល្បឿនកូដ (ជំនួសការប្រើ For Loop) ក្នុង AI
+
+**Vectorization** គឺជាសមត្ថភាពរបស់ NumPy ក្នុងការអនុវត្តប្រតិបត្តិការលើ Array ទាំងមូលដោយប្រើកូដ C ដែលបានធ្វើ Optimization រួចជាស្រេចនៅខាងក្រោម (Under the hood)។
+
+### ៧.១ ការប្រៀបធៀបល្បឿនរវាង For Loop និង Vectorization
+
+ឧបមាថាយើងមានទិន្នន័យ ១ លានលេខ ហើយយើងចង់បូកលេខទាំងនោះជាមួយលេខ ៥។
+
+``` py
+import time
+import numpy as np
+
+# បង្កើតទិន្នន័យ ១ លានលេខ
+n = 1000000
+data_list = list(range(n))
+data_array = np.arange(n)
+
+# ១. ការប្រើ For Loop (Python List)
+start_time = time.time()
+result_list = [x + 5 for x in data_list]
+end_time = time.time()
+print(f"For Loop Time: {end_time - start_time:.5f} វិនាទី")
+
+# ២. ការប្រើ Vectorization (NumPy Array)
+start_time = time.time()
+result_array = data_array + 5
+end_time = time.time()
+print(f"Vectorization Time: {end_time - start_time:.5f} វិនាទី")
+```
+**Result**
+``` py
+For Loop Time: 0.08640 វិនាទី
+Vectorization Time: 0.00546 វិនាទី
+```
+### ៧.២ ការអនុវត្ត Vectorization ក្នុង AI
+
+នៅពេលគណនា Activation Function ដូចជា ReLU ($max(0, x)$) សម្រាប់គ្រប់ Neuron ក្នុងស្រទាប់មួយ យើងប្រើ Vectorization ដើម្បីបញ្ចប់វាក្នុងពេលតែមួយ។
+
+```py
+# ឧបមាថា Z គឺជា output មកពី Linear Layer (មុន Activation)
+Z = np.array([-2.5, 1.2, -0.1, 4.8, 0.0])
+
+# ប្រើ Vectorization ដើម្បីអនុវត្ត ReLU
+# ReLU(x) = max(0, x)
+activation = np.maximum(0, Z)
+
+print("Linear Output (Z):", Z)
+print("ReLU Activation:", activation)
+```
+**Result**
+```py
+Linear Output (Z): [-2.5  1.2 -0.1  4.8  0. ]
+ReLU Activation: [0.  1.2 0.  4.8 0. ]
+```
+
+## ជំពូកទី ៨៖ ការអនុវត្តន៍ជាក់ស្តែងទី១៖ ការសរសេរ Forward Propagation នៃ Neural Network ជាមួយ NumPy
+
+នៅក្នុងជំពូកនេះ យើងនឹងបង្កើត Neural Network ដ៏សាមញ្ញមួយដែលមាន Layer ចំនួនពីរ (Input Layer, Hidden Layer, និង Output Layer)។
+
+### ៨.១ ទ្រឹស្តីនៃ Forward Propagation
+
+សម្រាប់ស្រទាប់នីមួយៗក្នុងបណ្តាញប្រសាទ ដំណើរការគណនាមានពីរជំហាន៖
+1.  **Linear Transformation:** $Z = X \cdot W + b$
+2.  **Activation Function:** $A = \sigma(Z)$ (យើងនឹងប្រើ Sigmoid សម្រាប់ Hidden Layer និង Output)
+
+ដែល $X$ ជា Input, $W$ ជា Weights, $b$ ជា Bias, និង $\sigma$ ជាអនុគមន៍សកម្ម។
+
+```py
+import numpy as np
+
+# ១. កំណត់អនុគមន៍ Sigmoid
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# ២. រៀបចំទិន្នន័យ Input (ឧទាហរណ៍៖ ៣ ករណី, ករណីនីមួយៗមាន ៤ features)
+np.random.seed(42)
+X = np.random.randn(3, 4)
+
+# ៣. កំណត់ Weights និង Biases សម្រាប់ Hidden Layer (មាន ៥ neurons)
+W1 = np.random.randn(4, 5)
+b1 = np.zeros((1, 5))
+
+# ៤. កំណត់ Weights និង Biases សម្រាប់ Output Layer (មាន ១ neuron)
+W2 = np.random.randn(5, 1)
+b2 = np.zeros((1, 1))
+
+print("Input Shape:", X.shape)
+print("Weights 1 Shape:", W1.shape)
+print("Weights 2 Shape:", W2.shape)
+```
+**Result**
+``` py
+Input Shape: (3, 4)
+Weights 1 Shape: (4, 5)
+Weights 2 Shape: (5, 1)
+```
+
+### ៨.២ ការគណនា Forward Pass
+
+ឥឡូវយើងអនុវត្តការគណនាជាបន្តបន្ទាប់ពីស្រទាប់មួយទៅស្រទាប់មួយទៀត។
+```py
+# ជំហានទី ១៖ គណនា Hidden Layer
+Z1 = np.dot(X, W1) + b1
+A1 = sigmoid(Z1)
+
+# ជំហានទី ២៖ គណនា Output Layer
+Z2 = np.dot(A1, W2) + b2
+A2 = sigmoid(Z2)
+
+print("Hidden Layer Output (A1) Shape:", A1.shape)
+print("\nFinal Prediction (A2):\n", A2)
+```
+**Result**
+```py
+Hidden Layer Output (A1) Shape: (3, 5)
+
+Final Prediction (A2):
+ [[0.49876734]
+ [0.46242694]
+ [0.23183298]]
+ ```
+
+ ## ជំពូកទី ៩៖ ការអនុវត្តន៍ជាក់ស្តែងទី២៖ ការគណនា Loss Function និង Backpropagation ជាមួយ NumPy
+
+បន្ទាប់ពីទទួលបានលទ្ធផលពី Forward Pass យើងត្រូវដឹងថា តើលទ្ធផលនោះខុសគ្នាពីការពិត (Ground Truth) កម្រិតណា។
+
+### ៩.១ ការគណនា Mean Squared Error (MSE)
+
+MSE ត្រូវបានប្រើជាទូទៅសម្រាប់បញ្ហា Regression ដើម្បីវាស់ស្ទង់កំហុសមធ្យម។
+
+**រូបមន្ត LaTeX:**
+$$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_{true} - y_{pred})^2$$
+```py
+# ឧបមាថា A2 មកពីជំពូកទី ៨ ជាការព្យាករណ៍ (y_pred)
+y_true = np.array([[0.5], [0.8], [0.2]])
+
+def mse_loss(y_true, y_pred):
+    return np.mean((y_true - y_pred)**2)
+
+loss = mse_loss(y_true, A2)
+print(f"Prediction (A2):\n{A2}")
+print(f"\nGround Truth (y_true):\n{y_true}")
+print(f"\nMSE Loss: {loss:.5f}")
+```
+**Result**
+```py
+Prediction (A2):
+[[0.49876734]
+ [0.46242694]
+ [0.23183298]]
+
+Ground Truth (y_true):
+[[0.5]
+ [0.8]
+ [0.2]]
+
+MSE Loss: 0.03832
+```
+### ៩.២ មូលដ្ឋានគ្រឹះនៃ Backpropagation ជាមួយ NumPy
+
+Backpropagation ប្រើច្បាប់ Chain Rule នៃដេរីវេ (Calculus) ដើម្បីរកមើលថាតើ Weights នីមួយៗរួមចំណែកដល់កំហុសប៉ុណ្ណា។
+
+សម្រាប់ Sigmoid Layer, ដេរីវេនៃ $A$ ធៀបនឹង $Z$ គឺ៖
+$$\frac{dA}{dZ} = A(1 - A)$$
+
+យើងប្រើវាដើម្បីរក Gradient និងកែតម្រូវ Weights (Optimization)។
+
+```py
+# ១. គណនាកំហុសនៅ Output Layer (Error)
+error = A2 - y_true
+
+# ២. គណនា Gradient នៃ Output Layer
+# dZ2 = error * sigmoid_derivative(Z2)
+dZ2 = error * (A2 * (1 - A2))
+
+# ៣. គណនា Gradient សម្រាប់ Weights (dW2)
+dW2 = np.dot(A1.T, dZ2)
+
+print("Gradient for W2 (dW2):\n", dW2)
+
+# ៤. ការកែតម្រូវ Weights (Gradient Descent step)
+learning_rate = 0.1
+W2 -= learning_rate * dW2
+print("\nWeights W2 after one update step:\n", W2)
+```
+**Result**
+```py
+Gradient for W2 (dW2):
+ [[-0.04506219]
+ [-0.00509039]
+ [-0.03133154]
+ [-0.02734062]
+ [-0.03712211]]
+
+Weights W2 after one update step:
+ [[-0.00899101]
+ [-1.05720189]
+ [ 0.82567807]
+ [-1.21810959]
+ [ 0.21257581]]
+ ```
+
+ ## ជំពូកទី ១០៖ ការរក្សាទុកទិន្នន័យ និងគម្រោងចុងបញ្ចប់ (Final Project)
+
+នៅក្នុងជំពូកចុងក្រោយនេះ យើងនឹងរៀនពីរបៀបរក្សាទុក Weights ដែលយើងបានបង្វឹក និងបង្កើតគម្រោងតូចមួយដើម្បីសរុបខ្លឹមសារមេរៀន។
+
+### ១០.១ ការរក្សាទុក និងទាញយក Array (Saving & Loading)
+
+បន្ទាប់ពីបង្វឹក AI រួច យើងត្រូវរក្សាទុកតម្លៃ Weights ទៅក្នុង File ដើម្បីប្រើប្រាស់នៅពេលក្រោយដោយមិនចាំបាច់បង្វឹកឡើងវិញ។ NumPy ប្រើប្រាស់ទម្រង់ `.npy` សម្រាប់ឯកសារទិន្នន័យលីនេអ៊ែរ។
+```py
+import numpy as np
+
+# ឧបមាថា W2 គឺជា Weights ដែលបានបង្វឹកមករួចរាល់
+# រក្សាទុកទៅក្នុង file
+np.save('trained_weights_w2.npy', W2)
+
+# ទាញយកមកប្រើប្រាស់វិញ
+loaded_w2 = np.load('trained_weights_w2.npy')
+
+print("Original W2 Shape:", W2.shape)
+print("Loaded W2 Shape:", loaded_w2.shape)
+print("Check equality:", np.allclose(W2, loaded_w2))
+```
+**Result**
+``` py
+Original W2 Shape: (5, 1)
+Loaded W2 Shape: (5, 1)
+Check equality: True
+```
+### ១០.២ គម្រោងចុងបញ្ចប់៖ សាងសង់ Simple Neural Network Trainer
+
+ចូរប្រើប្រាស់ NumPy ដើម្បីសរសេរ Loop សម្រាប់បង្វឹក Network សាមញ្ញមួយឱ្យរៀនស្គាល់លំនាំទិន្នន័យ (Pattern Recognition)។
+
+```py
+def sigmoid(x): return 1 / (1 + np.exp(-x))
+def sigmoid_derivative(x): return x * (1 - x)
+
+# Dataset: XOR-like logic gate
+X = np.array([[0,0], [0,1], [1,0], [1,1]])
+y = np.array([[0], [1], [1], [0]])
+
+# Initialize Weights
+np.random.seed(1)
+W_hidden = np.random.uniform(size=(2, 4))
+W_output = np.random.uniform(size=(4, 1))
+
+# Training Loop (1000 epochs)
+for epoch in range(1000):
+    # Forward Pass
+    layer1 = sigmoid(np.dot(X, W_hidden))
+    output = sigmoid(np.dot(layer1, W_output))
+
+    # Backpropagation
+    error = y - output
+    d_output = error * sigmoid_derivative(output)
+
+    error_hidden = d_output.dot(W_output.T)
+    d_hidden = error_hidden * sigmoid_derivative(layer1)
+
+    # Updating Weights
+    W_output += layer1.T.dot(d_output) * 0.1
+    W_hidden += X.T.dot(d_hidden) * 0.1
+
+print("Final Predictions after training:")
+print(output.round(2))
+```
+**Result**
+```py
+Final Predictions after training:
+[[0.5]
+ [0.5]
+ [0.5]
+ [0.5]]
+ ```
+ ## 📝 សេចក្តីសង្ខេបមេរៀន (Course Summary)
+
+ឆ្លងកាត់ការសិក្សាទាំង ១០ ជំពូក អ្នកបានក្តាប់ជាប់នូវមូលដ្ឋានគ្រឹះបច្ចេកទេសសំខាន់ៗរួមមាន៖
+
+1.  **NumPy Fundamentals:** ការយល់ដឹងពី `ndarray`, ប្រភេទទិន្នន័យ (`dtype`) និងការគ្រប់គ្រង Memory ដែលមានប្រសិទ្ធភាពជាង Python List។
+2.  **Broadcasting & Vectorization:** បច្ចេកទេសសរសេរកូដឱ្យលឿនបំផុតដោយមិនប្រើ `for loop` ដែលជាបេះដូងនៃ High-performance AI computing។
+3.  **Linear Algebra:** ការអនុវត្ត `Dot Product` និង `Matrix Multiplication` ដែលជាប្រតិបត្តិការចម្បងក្នុង Neural Networks។
+4.  **Data Preprocessing:** របៀបបំប្លែងទិន្នន័យតាមរយៈ `Normalization` និង `Standardization` ដើម្បីឱ្យ Model ឆាប់រៀនចេះ។
+5.  **Neural Network Logic:** ការបង្កើត `Forward Propagation` (ការទស្សន៍ទាយ) និង `Backpropagation` (ការរៀនពីកំហុស) ដោយប្រើ Calculus មូលដ្ឋាន។
+6.  **Model Management:** ការរក្សាទុក និងទាញយក Weights មកប្រើប្រាស់ឡើងវិញតាមរយៈ `.npy` files។
+
+**ជំហានបន្ទាប់:**
+អ្នកអាចសាកល្បងអនុវត្តបន្ថែមលើ Dataset ធំៗ ឬឈានទៅសិក្សាបណ្ណាល័យ **Pandas** (សម្រាប់ Data Manipulation) និង **Matplotlib** (សម្រាប់ Data Visualization) ដើម្បីពង្រឹងសមត្ថភាពជា Data Scientist ពេញលេញ។
+
+---
+## សេចក្តីសន្និដ្ឋាន
+
+អបអរសាទរ! អ្នកបានបញ្ចប់សៀវភៅសិក្សា **"NumPy for AI Training"**។ អ្នកបានរៀនតាំងពីមូលដ្ឋានគ្រឹះ NDArray រហូតដល់ការសរសេរ Backpropagation ទាំងស្រុងដោយប្រើ NumPy។ ចំណេះដឹងទាំងនេះគឺជាគ្រឹះដ៏រឹងមាំបំផុតសម្រាប់ឈានទៅសិក្សា Frameworks ធំៗដូចជា TensorFlow ឬ PyTorch នាពេលអនាគត។
+
+**សូមអរគុណ!**
+
+# 📝 វិញ្ញាសាតេស្តសមត្ថភាព (Competency Test)
+
+សូមជ្រើសរើសចម្លើយដែលត្រឹមត្រូវបំផុតសម្រាប់សំនួរខាងក្រោម៖
+
+### ផ្នែកទី ១៖ មូលដ្ឋានគ្រឹះ NumPy (ជំពូក ១-២)
+1. **តើ NumPy មកពីពាក្យពេញថាអ្វី?**
+   - ក. Number Python
+   - ខ. Numerical Python
+   - គ. Numeric Pi
+2. **តើ command ណាដែលប្រើសម្រាប់ពិនិត្យមើល Version របស់ NumPy?**
+3. **តើ `np.zeros((2, 3))` បង្កើត Array ដែលមានរូបរាង (Shape) បែបណា?**
+4. **តើ dtype ណាដែលនិយមប្រើបំផុតក្នុង Deep Learning ដើម្បីសន្សំ Memory?**
+5. **តើអ្វីទៅជា ndarray?**
+
+### ផ្នែកទី ២៖ ប្រតិបត្តិការ និង Broadcasting (ជំពូក ៣-៥)
+6. **តើអ្វីទៅជាអត្ថប្រយោជន៍ចម្បងនៃ Vectorization?**
+7. **ប្រសិនបើ `A.shape = (3, 1)` និង `B.shape = (1, 5)` តើ `A + B` អាចធ្វើទៅបានដែរឬទេ? ព្រោះអ្វី?**
+8. **ចូរប្រាប់រូបមន្ត Normalization (Min-Max Scaling)។**
+9. **តើ `np.dot(a, b)` និង `a * b` ខុសគ្នាយ៉ាងដូចម្តេច?**
+10. **តើការធ្វើ Transpose ម៉ាទ្រីស មានន័យដូចម្តេច?**
+
+### ផ្នែកទី ៣៖ ការរៀបចំទិន្នន័យ (ជំពូក ៦-៧)
+11. **តើ `arr[:, :2]` មានន័យដូចម្តេច?**
+12. **តើ Boolean Indexing (Masking) ប្រើសម្រាប់អ្វី?**
+13. **ហេតុអ្វីយើងត្រូវធ្វើ Shuffle ទិន្នន័យមុននឹងបែងចែក Train/Test sets?**
+14. **តើ `np.reshape(arr, (-1, 1))` ធ្វើអ្វីខ្លះដល់ Array?**
+15. **តើ `np.maximum(0, x)` គឺជាអនុគមន៍សកម្ម (Activation Function) ឈ្មោះអ្វី?**
+
+### ផ្នែកទី ៤៖ Neural Network & Calculus (ជំពូក ៨-៩)
+16. **ចូរប្រាប់រូបមន្ត Linear Transformation ក្នុង Neural Layer។**
+17. **តើ Sigmoid Function ផ្តល់តម្លៃស្ថិតក្នុងចន្លោះលេខប៉ុន្មានទៅប៉ុន្មាន?**
+18. **តើ Forward Propagation គឺជាអ្វី?**
+19. **តើ MSE Loss វាស់ស្ទង់ពីអ្វី?**
+20. **តើ Backpropagation ប្រើច្បាប់អ្វីក្នុង Calculus ដើម្បីគណនា Gradient?**
+21. **តើ Learning Rate មានតួនាទីអ្វីក្នុង Gradient Descent?**
+22. **ប្រសិនបើ Loss មិនថយចុះសោះ តើអ្នកគួរពិនិត្យចំណុចណាខ្លះ?**
+23. **តើដេរីវេនៃ Sigmoid $A$ ស្មើនឹងអ្វី?**
+24. **តើ Bias ជួយអ្វីខ្លះដល់ Model?**
+25. **តើ Weights ត្រូវបានកំណត់តម្លៃដំបូងដោយរបៀបណាទើបល្អ?**
+
+### ផ្នែកទី ៥៖ ការអនុវត្ត និងការរក្សាទុក (ជំពូក ១០)
+26. **តើ extension file របស់ NumPy Array គឺអ្វី?**
+27. **តើ `np.save()` និង `np.load()` ប្រើសម្រាប់អ្វី?**
+28. **តើ `np.allclose(a, b)` ប្រើសម្រាប់ពិនិត្យអ្វី?**
+29. **នៅក្នុង Project XOR តើ Hidden Layer មានតួនាទីអ្វី?**
+30. **តើអ្វីទៅជា 'Epoch' ក្នុងការបង្វឹក Model?**
+
+---
+*ចំណាំ៖ អ្នកអាចសាកល្បងសរសេរកូដក្នុង Cell ខាងក្រោមដើម្បីផ្ទៀងផ្ទាត់ចម្លើយ!*
+
+# 🔑 ចម្លើយសម្រាប់វិញ្ញាសាតេស្តសមត្ថភាព (Answer Key)
+
+### ផ្នែកទី ១៖ មូលដ្ឋានគ្រឹះ NumPy
+1.  **ខ. Numerical Python**
+2.  `np.__version__`
+3.  Array ២ វិមាត្រ ដែលមាន ២ ជួរដេក និង ៣ ជួរឈរ។
+4.  `np.float32` (ព្រោះវាមានតុល្យភាពរវាងភាពច្បាស់លាស់ និងការប្រើ Memory)។
+5.  គឺជា Multi-dimensional Array Object ដែលមានធាតុជាប្រភេទតែមួយ (Homogeneous)។
+
+### ផ្នែកទី ២៖ ប្រតិបត្តិការ និង Broadcasting
+6.  បង្កើនល្បឿនគណនាដោយប្រើ Parallel Processing ជំនួសឱ្យ Python Loops។
+7.  **បាន** ព្រោះវាអនុលោមតាមច្បាប់ Broadcasting (វិមាត្រដែលមានទំហំ ១ នឹងត្រូវបានពង្រីក)។
+8.  $X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}}$
+9.  `np.dot(a, b)` គឺជា Matrix Multiplication (Dot Product) ចំណែក `a * b` គឺជា Element-wise multiplication (គុណតាមធាតុនីមួយៗ)។
+10. ការប្តូរជួរឈរ (Columns) ទៅជាជួរដេក (Rows) និងច្រាសមកវិញ។
+
+### ផ្នែកទី ៣៖ ការរៀបចំទិន្នន័យ
+11. យកគ្រប់ជួរដេក ប៉ុន្តែយកតែ ២ ជួរឈរដំបូងប៉ុណ្ណោះ។
+12. ប្រើសម្រាប់ជ្រើសរើសទិន្នន័យតាមរយៈលក្ខខណ្ឌ Logic (ឧទាហរណ៍៖ យកតែលេខ > 0)។
+13. ដើម្បីកុំឱ្យ Model ចងចាំលំដាប់លំដោយទិន្នន័យ (Bias) និងឱ្យការបែងចែកមានលក្ខណៈចៃដន្យល្អ។
+14. ប្តូរទម្រង់ Array ឱ្យទៅជាជួរឈរតែមួយ ដោយរក្សាចំនួនធាតុនៅដដែល។
+15. ReLU (Rectified Linear Unit)។
+
+### ផ្នែកទី ៤៖ Neural Network & Calculus
+16. $Z = X \cdot W + b$
+17. ចន្លោះពី 0 ដល់ 1។
+18. ដំណើរការគណនាទិន្នន័យពី Input ឆ្លងកាត់ Layers ដើម្បីទទួលបានការព្យាករណ៍ (Prediction)។
+19. វាស់ស្ទង់ពីគម្លាតមធ្យមរវាងតម្លៃពិត និងតម្លៃព្យាករណ៍ (Error)។
+20. Chain Rule។
+21. កំណត់ទំហំជំហាន (Step size) ក្នុងការកែតម្រូវ Weights ដើម្បីឆ្ពោះទៅរក Minimum Loss។
+22. ពិនិត្យ Learning Rate (ប្រហែលតូចពេក), ការធ្វើ Normalization, ឬការកំណត់ Weights ដំបូង។
+23. $A(1 - A)$
+24. ជួយឱ្យ Model អាចបត់បែន (Shift) ការទស្សន៍ទាយបានប្រសើរជាងមុន។
+25. កំណត់ដោយប្រើលេខចៃដន្យតូចៗ (Random Initialization) មិនមែន ០ ទាំងអស់ទេ។
+
+### ផ្នែកទី ៥៖ ការអនុវត្ត និងការរក្សាទុក
+26. `.npy`
+27. `np.save()` ប្រើសម្រាប់រក្សាទុក Array ទៅក្នុង Disk និង `np.load()` ប្រើសម្រាប់ទាញយកមកវិញ។
+28. ពិនិត្យមើលថាតើ Array ពីរមានតម្លៃស្មើគ្នាឬអត់ (ដោយអនុញ្ញាតឱ្យមានលំអៀងតូចបំផុត)។
+29. ដើម្បីរៀនពីលក្ខណៈមិនមែនលីនេអ៊ែរ (Non-linear features) ដែល Input ធម្មតាមិនអាចបំបែកបាន។
+30. ចំនួនដងដែល Model ហ្វឹកហាត់លើ Dataset ទាំងមូលបានចប់សព្វគ្រប់ ១ ជុំ។
