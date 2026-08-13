@@ -127,3 +127,11 @@ print(f"Total elements: {example.size}")
 print(f"Size of each element: {example.itemsize} bytes")
 print(f"Total memory consumed: {example.nbytes} bytes")
 ```
+
+## ជំពូកទី ៣៖ ប្រតិបត្តិការគណិតវិទ្យា និង Broadcasting ក្នុង AI
+
+នៅក្នុង AI យើងកម្រប្រើ `for loop` ដើម្បីគណនាលើទិន្នន័យនីមួយៗណាស់ ព្រោះវាមានល្បឿនយឺត។ NumPy អនុញ្ញាតឱ្យយើងធ្វើប្រតិបត្តិការលើ Array ទាំងមូលក្នុងពេលតែមួយ។
+
+### ៣.១ ប្រតិបត្តិការតាមធាតុនីមួយៗ (Element-wise Operations)
+
+រាល់ប្រតិបត្តិការគណិតវិទ្យាមូលដ្ឋានដូចជា បូក (+), ដក (-), គុណ (*), ចែក (/) ត្រូវបានអនុវត្តទៅលើធាតុដែលមានទីតាំងដូចគ្នានៃ Array។
