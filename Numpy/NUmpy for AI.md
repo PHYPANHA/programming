@@ -77,3 +77,53 @@ print("Initial Weights:\n", weights)
 *   `np.ones()`: បង្កើត Array ដែលមានលេខ ១ ទាំងអស់
 *   `np.eye()`: បង្កើត Identity Matrix (មានលេខ ១ នៅអង្កត់ទ្រូង - Diagonal)
 *   `np.arange()`: បង្កើតលំដាប់លេខ (ដូច range ក្នុង Python)
+
+```py
+# បង្កើត Bias vector ដែលមានតម្លៃ ០ ចំនួន ៥
+biases = np.zeros(5)
+print("Zero Biases:", biases)
+
+# បង្កើត Matrix ទំហំ 2x3 ដែលមានលេខ ១ ទាំងអស់
+ones_arr = np.ones((2, 3))
+print("\nOnes Matrix:\n", ones_arr)
+
+# បង្កើត Identity Matrix ទំហំ 3x3
+identity = np.eye(3)
+print("\nIdentity Matrix:\n", identity)
+```
+
+### ២.២ ប្រភេទទិន្នន័យ (Data Types - dtype)
+
+ក្នុងវិទ្យាសាស្ត្រទិន្នន័យ ការគ្រប់គ្រងអង្គចងចាំ (Memory) គឺសំខាន់ណាស់។ ប្រសិនបើទិន្នន័យរបស់អ្នកជាលេខរៀង (Integers) ប៉ុន្តែអ្នកប្រើ Float 64-bit វានឹងស៊ីអង្គចងចាំទ្វេដង។
+
+ប្រភេទ dtype សំខាន់ៗ៖
+*   `np.float32`: ប្រើច្រើនបំផុតក្នុង Deep Learning ព្រោះវាមានល្បឿនលឿន និងស៊ី Memory តិចជាង float64។
+*   `np.int64`: ប្រើសម្រាប់ Index ឬ Label នៃទិន្នន័យ។
+
+```py 
+# បង្កើត array ជាមួយ dtype ជាក់លាក់
+float_arr = np.array([1, 2, 3], dtype=np.float32)
+print(f"Array: {float_arr}, Dtype: {float_arr.dtype}")
+
+# ការបំប្លែងប្រភេទទិន្នន័យ (Casting)
+int_arr = float_arr.astype(np.int64)
+print(f"Converted Array: {int_arr}, Dtype: {int_arr.dtype}")
+```
+
+### ២.៣ ការរៀបចំក្នុងអង្គចងចាំ (Memory Layout)
+
+NumPy Array រក្សាទុកទិន្នន័យក្នុងប្លុកបន្តបន្ទាប់គ្នា (Contiguous block) ក្នុង Memory។ នេះជាមូលហេតុដែលវាលឿនជាង Python List។
+
+*   **Attributes សំខាន់ៗ៖**
+    *   `ndim`: ចំនួនវិមាត្រ
+    *   `size`: ចំនួនធាតុសរុប
+    *   `itemsize`: ទំហំធាតុនីមួយៗជា Byte
+
+``` py 
+example = np.array([[1, 2], [3, 4], [5, 6]])
+
+print(f"Number of dimensions: {example.ndim}")
+print(f"Total elements: {example.size}")
+print(f"Size of each element: {example.itemsize} bytes")
+print(f"Total memory consumed: {example.nbytes} bytes")
+```
