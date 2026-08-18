@@ -32,7 +32,8 @@
 `kubectl logs` គឺជា Command ងាយស្រួលបំផុតសម្រាប់មើល Logs ពី Container នៅក្នុង Pod មួយ។
 
 **ឧទាហរណ៍ Pod YAML (logging-app.yaml):**
-
+   
+    
 ```yaml
 %%writefile logging-app.yaml
 apiVersion: v1
