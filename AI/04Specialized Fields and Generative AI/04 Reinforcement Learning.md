@@ -1,0 +1,1 @@
+Reinforcement Learning: ការរៀនតាមរយៈការសាកល្បង និងការផ្តល់រង្វាន់/ពិន័យ (Q-Learning, Policy Gradients)។

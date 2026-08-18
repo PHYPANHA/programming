@@ -1,0 +1,1 @@
+Supervised Learning (ការរៀនមានគ្រូបង្គោល): Linear Regression, Logistic Regression, Decision Trees, Random Forest, Support Vector Machines (SVM)។

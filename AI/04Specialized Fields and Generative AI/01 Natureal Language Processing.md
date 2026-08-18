@@ -1,0 +1,1 @@
+Natural Language Processing (NLP): ការយល់ដឹង ការវិភាគ និងការបង្កើតភាសាមនុស្ស (Tokenization, Sentiment Analysis, Named Entity Recognition)។

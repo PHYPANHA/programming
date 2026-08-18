@@ -1,0 +1,1 @@
+Neural Network Basics: Perceptron, Activation Functions (ReLU, Sigmoid, Softmax), Forward and Backward Propagation។
