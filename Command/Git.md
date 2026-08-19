@@ -39,7 +39,7 @@ git add [file]
 add a file as it looks now to your next commit (stage)
 ```py
 git reset [file]
-```
+```    
 unstage a file while retaining the changes in working directory
 ```py
 git diff
