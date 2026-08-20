@@ -46,3 +46,23 @@ kubectl get po pod1
         - Use YAML rather than JSON since YAML tends to be more user-friendly, especially for configuration files.
         Example: `kubectl get -f ./pod.yaml`
 - `flags`: Specifies optional flags. For example, you can use the `-s` or `--server` flags to specify the address and port of the Kubernetes API server.
+
+
+<blockquote style="border-left: 4px solid #FFA500; padding-left: 16px; margin-left: 0;">
+  <strong>Caution:</strong><br>
+  Flags that you specify from the command line override default values and any corresponding environment variables.
+</blockquote>
+
+IF you need help, run `kubectl help` from the terminal window.
+
+### In-cluster authentication and namespace overrides
+
+By default `kubectl` will first determine if it is running within a pod, and thus in a cluster. It starts by checking for the `KUBERNETES_SERVICE_HOST` and `KUBERNETES_SERVICE_PORT` environment variables and the existence of a service account token file at `/var/run/secrets/kubernetes.io/serviceaccount/token`. If all three are found in-cluster authentication is assumed.
+
+To maintain backwards compatibility, if the `POD_NAMESPACE` environment variable is set during in-cluster authentication it will override the default namespace from the service account token. Any manifests or tools relying on namespace defaulting will be affected by this.
+
+**`POD_NAMESPACE` environment variable**
+
+If the `POD_NAMESPACE` environment variable is set, cli operations on namespaced resources will default to the variable value. For example, if the variable is set to `seattle`, `kubectl get pods` would return pods in the `seattle` namespace. This is because pods are a namespaced resource, and no namespace was provided in the command. Review the output of `kubectl api-resources` to determine if a resource is namespaced.
+
+Explicit use of `--namespace <value>` overrides this behavior.
