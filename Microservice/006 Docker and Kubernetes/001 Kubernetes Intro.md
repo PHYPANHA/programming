@@ -14,6 +14,8 @@
 
 ## ១.១ អ្វីទៅជា Container, Docker និងបញ្ហាដែលត្រូវដោះស្រាយ?
 
+![System Architechure](H:\GitHub\programming\PIC\program\Kubernetes_logo_without_workmark.svg)
+
 ### Container
 
 Container គឺជាបច្ចេកវិទ្យាដែលអនុញ្ញាតឱ្យអ្នកវេចខ្ចប់ (package) កម្មវិធីរបស់អ្នក រួមទាំង dependencies (ដូចជា libraries, binaries, configuration files) ទាំងអស់ចូលទៅក្នុងឯកតាស្វយ័តមួយ (isolated unit)។ វាដំណើរការដូចជាម៉ាស៊ីននិម្មិត (Virtual Machine) ប៉ុន្តែមានទម្ងន់ស្រាលជាង និងមានប្រសិទ្ធភាពជាង។
