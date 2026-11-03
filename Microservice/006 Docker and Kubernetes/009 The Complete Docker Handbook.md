@@ -87,8 +87,14 @@ www.codemaler.com
     11.4 Healthchecks
     11.5 Depands_on and Restart Policies
     11.6 Full Stack with Redis and Nginx Reverse Proxy
+
+### 12. Advanced Docker Concepts
+
+    12.1 Multi-Stage Builds Deep Dive
+    12.2 BuildKit and Advance Catching
+    12.3 Passing Secrets Securely
+    12.4 Private Registies and Authentication
+    12.5 Resource Limits and Constraints
+    12.6 Healthchecks in Dockerfile
+
     
-
-
-
-
