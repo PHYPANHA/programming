@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>មេរៀន C Programming</title>
     <style>
-        /* កំណត់ទម្រង់មូលដ្ឋានដើម្បីកុំឱ្យមានចន្លោះសល់ជុំវិញអេក្រង់ */
         * {
             margin: 0;
             padding: 0;
@@ -13,43 +12,59 @@
         }
 
         body {
-            font-family: 'Kantumruy Pro', 'Khmer OS Battambang', sans-serif;
-            overflow: hidden; /* បិទ Scroll របស់ body ដើម្បីប្រើ Scroll របស់ container វិញ */
+            font-family: 'Khmer OS Battambang', 'Kantumruy Pro', sans-serif;
+            overflow: hidden;
+            color: #e8ebf0;
         }
 
-        /* Container មេសម្រាប់ផ្ទុកស្លាយទាំងអស់ */
+        /* កុងតឺន័រមេសម្រាប់ផ្ទុកស្លាយទាំងអស់ */
         .slides-container {
-            height: 100vh;                /* កម្ពស់ពេញអេក្រង់ */
-            overflow-y: scroll;           /* អនុញ្ញាតឱ្យ Scroll ឡើងលើ-ចុះក្រោម */
-            scroll-snap-type: y mandatory;/* បង្ខំឱ្យឈប់ចំស្លាយនីមួយៗតាមអ័ក្សឈរ (y) */
-            scroll-behavior: smooth;      /* ធ្វើឱ្យការរំកិលមានភាពរលូន */
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
         }
 
-        /* ទម្រង់សម្រាប់ស្លាយនីមួយៗ */
+        /* ទម្រង់ស្លាយនីមួយៗ - តម្រឹមចាប់ផ្តើមពីខាងលើ ខាងឆ្វេង */
         .slide {
-            height: 100vh;                /* ស្លាយនីមួយៗមានកម្ពស់ពេញ ១ អេក្រង់ */
+            height: 100vh;
             width: 100%;
-            scroll-snap-align: start;     /* តម្រឹមគែមខាងលើនៃស្លាយឱ្យស្មើនឹងគែមលើអេក្រង់ */
-            scroll-snap-stop: always;     /* ការពារកុំឱ្យ Scroll រំលងស្លាយពេលអូសលឿន */
-            
-            /* រៀបចំអក្សរឱ្យនៅចំកណ្តាលអេក្រង់ */
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-            padding: 20px;
+            justify-content: flex-start; /* តម្រឹមពីផ្នែកខាងលើ */
+            align-items: flex-start;     /* តម្រឹមពីផ្នែកខាងឆ្វេង */
+            text-align: left;
+            padding: 50px 60px;          /* គម្លាតពីគែមអេក្រង់ */
         }
 
-        .slide h1 {
-            font-size: 3rem;
+        /* ទម្រង់ចំណងជើងធំតាមផ្នែក */
+        .section-title {
+            font-family: 'Khmer OS Muol Light', 'Kantumruy Pro', sans-serif;
+            font-size: 2rem;
+            color: #0f172a;
+            background-color: #b52c0a;              /* ផ្ទៃខាងក្នុងគ្មានពណ៌ */
+            border: #c9c8c5;                               /* គ្មានបន្ទាត់ស៊ុំជុំវិញ */
+            border-left: 6px solid #2563eb;             /* បន្ទាត់ពណ៌បញ្ឈរនៅខាងឆ្វេង */
+            box-shadow: 0 4px 12px rgba(141, 40, 40, 0.08); /* ស្រមោលស្រាល */
+            padding: 12px 24px;
+            border-radius: 0 6px 6px 0;                 /* ធ្វើឱ្យជ្រុងខាងស្តាំមូលស្រាល */
+            margin-bottom: 1.8rem;                      /* ទម្លាក់អត្ថបទចុះក្រោមមួយបន្ទាត់ */
+        }
+
+        /* ទម្រង់អត្ថបទខ្លឹមសារខាងក្រោមចំណងជើង */
+        .slide-content {
+            width: 100%;
+            max-width: 900px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #648bc1;
+        }
+
+        .slide-content p {
             margin-bottom: 15px;
-        }
-
-        .slide p {
-            font-size: 1.25rem;
-            max-width: 600px;
         }
 
         /* កំណត់ពណ៌ផ្ទៃខាងក្រោយផ្សេងគ្នាដើម្បីងាយស្រួលសម្គាល់ស្លាយ */
