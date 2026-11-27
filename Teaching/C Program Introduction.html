@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>មេរៀន C Programming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Khmer OS Battambang', 'Kantumruy Pro', sans-serif;
+            overflow: hidden;
+            color: #e8ebf0;
+        }
+
+        /* កុងតឺន័រមេសម្រាប់ផ្ទុកស្លាយទាំងអស់ */
+        .slides-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* ទម្រង់ស្លាយនីមួយៗ - តម្រឹមចាប់ផ្តើមពីខាងលើ ខាងឆ្វេង */
+        .slide {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* តម្រឹមពីផ្នែកខាងលើ */
+            align-items: flex-start;     /* តម្រឹមពីផ្នែកខាងឆ្វេង */
+            text-align: left;
+            padding: 50px 60px;          /* គម្លាតពីគែមអេក្រង់ */
+        }
+
+        /* ទម្រង់ចំណងជើងធំតាមផ្នែក */
+        .section-title {
+            font-family: 'Khmer OS Muol Light', 'Kantumruy Pro', sans-serif;
+            font-size: 2rem;
+            color: #0f172a;
+            background-color: #b52c0a;              /* ផ្ទៃខាងក្នុងគ្មានពណ៌ */
+            border: #c9c8c5;                               /* គ្មានបន្ទាត់ស៊ុំជុំវិញ */
+            border-left: 6px solid #2563eb;             /* បន្ទាត់ពណ៌បញ្ឈរនៅខាងឆ្វេង */
+            box-shadow: 0 4px 12px rgba(141, 40, 40, 0.08); /* ស្រមោលស្រាល */
+            padding: 12px 24px;
+            border-radius: 0 6px 6px 0;                 /* ធ្វើឱ្យជ្រុងខាងស្តាំមូលស្រាល */
+            margin-bottom: 1.8rem;                      /* ទម្លាក់អត្ថបទចុះក្រោមមួយបន្ទាត់ */
+        }
+
+        /* ទម្រង់អត្ថបទខ្លឹមសារខាងក្រោមចំណងជើង */
+        .slide-content {
+            width: 100%;
+            max-width: 900px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #648bc1;
+        }
+
+        .slide-content p {
+            margin-bottom: 15px;
+        }
+
+        /* កំណត់ពណ៌ផ្ទៃខាងក្រោយផ្សេងគ្នាដើម្បីងាយស្រួលសម្គាល់ស្លាយ */
+        .slide-1 { background-color: #3e51ad; }
+        .slide-2 { background-color: #0f766e; }
+        .slide-3 { background-color: #b45309; }
+        .slide-4 { background-color: #6d28d9; }
+        .slide-5 { background-color: #6d28d9; }
+        .slide-6 { background-color: #6d28d9; }
+        .slide-7 { background-color: #1e3a8a; }
+        .slide-8 { background-color: #1e3a8a; }
+        .slide-9 { background-color: #1e3a8a; }
+        .slide-10 { background-color: #1e3a8a; }
+        .slide-11 { background-color: #1e3a8a; }
+        .slide-12 { background-color: #1e3a8a; }
+        .slide-13 { background-color: #1e3a8a; }
+        .slide-14 { background-color: #1e3a8a; }
+        .slide-15 { background-color: #1e3a8a; }
+        .slide-16 { background-color: #1e3a8a; }
+        .slide-17 { background-color: #1e3a8a; }
+        .slide-18 { background-color: #1e3a8a; }
+        .slide-19 { background-color: #1e3a8a; }
+        .slide-20 { background-color: #1e3a8a; }
+        .slide-21 { background-color: #b45309; }
+    </style>
+</head>
+<body>
+
+    <div class="slides-container">
+        <section class="slide slide-1">
+            <h1 align = "left">ស្លាយទី ១</h1>
+            <p>សូមស្វាគមន៍មកកាន់មេរៀន C Programming។</p>
+
+        </section>
+
+        <section class="slide slide-2">
+            <h1 align = left>ស្លាយទី ២</h1>
+            <p>ការប្រើប្រាស់ CSS Scroll Snap ជួយឱ្យទំព័រឈប់ចំទីតាំងដោយស្វ័យប្រវត្តិ។</p>
+        </section>
+
+        <section class="slide slide-3">
+            <h1>ស្លាយទី ៣</h1>
+            <p>អ្នកមិនចាំបាច់ប្រើប្រាស់កូដ JavaScript បន្ថែមសម្រាប់មុខងារមូលដ្ឋាននេះទេ។</p>
+        </section>
+
+        <section class="slide slide-4">
+            <h1>ស្លាយទី ៤</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-5">
+            <h1>ស្លាយទី ៥</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-6">
+            <h1>ស្លាយទី ៦</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+        <section class="slide slide-7">
+            <h1>ស្លាយទី ៧</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-8">
+            <h1>ស្លាយទី ៨</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-9">
+            <h1>ស្លាយទី ៩</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-10">
+            <h1>ស្លាយទី ១០</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-11">
+            <h1>ស្លាយទី ១១</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-12">
+            <h1>ស្លាយទី ១២</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-13">
+            <h1>ស្លាយទី ១៣</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-14">
+            <h1>ស្លាយទី ១៤</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-15">
+            <h1>ស្លាយទី ៥</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-16">
+            <h1>ស្លាយទី ១៦</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-17">
+            <h1>ស្លាយទី ១៧</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-18">
+            <h1>ស្លាយទី ១៨</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-19">
+            <h1>ស្លាយទី ១៩</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-20">
+            <h1>ស្លាយទី ២០</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+        <section class="slide slide-21">
+            <h1>ស្លាយទី ២១</h1>
+            <p>នេះជាស្លាយចុងក្រោយ។ អ្នកអាច Scroll ឡើងលើវិញបាន។</p>
+        </section>
+
+
+    </div>
+
+</body>
+</html>
